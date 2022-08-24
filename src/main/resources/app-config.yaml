@@ -1,0 +1,15 @@
+http:
+  port: "![IZ0MlH6UxQ0=]"
+
+receipt:
+  host: "![6hvm1Elg3GxFoFpmcitcG2pK43xYyXTsZAIDrg/7J/5hgCNdhuggZzIeW5f8gPkuowV4PNlb1e4=]"
+  port: "![weyIijsSih4=]"
+  basepath: "![xB1sWPnjbpM=]"
+  protocol: "![+T2MVnm5wyI=]"
+  client_id: "![69ICkR14wG5zNbe8a8+QQ/QEmyV7XPae4gdRoWDBacTxf2x7LsVWNw==]"
+  client_secret: "![EGKXO7HMk+Is9AW2qpH/5BriJuObIyx/zCQ4PUa8fMyu/99VCGfqBw==]"
+
+sfdc:
+  username: "![btSFrBc/A4u/S/XOCqUUFGDD3uRVU7A/vzkNPps05p0=]"
+  password: "![vreDP3nZfC3CobT+PFsW3w==]"
+  token: "![yFmTbyO7JqIg2GUURnLt0WiiCKJGUfkh56hp03Op0gs=]"

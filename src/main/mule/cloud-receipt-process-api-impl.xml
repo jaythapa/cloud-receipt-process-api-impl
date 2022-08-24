@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:cloud-receipts-system-api="http://www.mulesoft.org/schema/mule/cloud-receipts-system-api" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/cloud-receipts-system-api http://www.mulesoft.org/schema/mule/cloud-receipts-system-api/current/mule-cloud-receipts-system-api.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
+
+    <global-property doc:name="Global Property" doc:id="aa03aed1-8661-480a-acca-66d75612afab" name="runtime.property" value="rabin_mulesoft" />
+	<cloud-receipts-system-api:config name="Cloud_Receipts_System_API_Config" doc:name="Cloud Receipts System API Config" doc:id="2ef49ad3-f161-4cd4-9793-e379fd2283df" property_host="${secure::receipt.host}" property_port="${secure::receipt.port}" property_protocol="${secure::receipt.protocol}" />
+	    
+	<configuration-properties doc:name="Configuration properties" doc:id="dab83006-9c00-4a24-840c-f14b4196c695" file="app-config.yaml" />
+	<salesforce:sfdc-config name="Salesforce_Config" doc:name="Salesforce Config" doc:id="fabc22a1-1bf3-423a-833e-a28c3084cb1f" >
+		<salesforce:basic-connection username="${secure::sfdc.username}" password="${secure::sfdc.password}" securityToken="${secure::sfdc.token}" />
+	</salesforce:sfdc-config>
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="44c7909a-4928-44a6-aff8-a258fe161aa0" >
+		<http:listener-connection host="0.0.0.0" port="${secure::http.port}" />
+	</http:listener-config>
+	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="ed29bf64-7e26-45f9-8798-134ce14b3a3f" file="app-config.yaml" key="${runtime.property}" >
+		<secure-properties:encrypt algorithm="Blowfish" />
+	</secure-properties:config>
+	
+	<flow name="Get_Receipts_Impl" doc:id="57519a24-86ca-4a15-8798-26096ee1efd1" >
+		<http:listener doc:name="Listener" doc:id="1a7f0e9b-05da-4385-9c4e-8d0a0f0a327a" config-ref="HTTP_Listener_config" path="/receipts"/>
+		<cloud-receipts-system-api:get-all-receipts doc:name="Get all receipts" doc:id="36a5749d-0e7f-4599-b9f2-f9656ae01ab5" config-ref="Cloud_Receipts_System_API_Config" client-id="${secure::receipt.client_id}" client-secret="${secure::receipt.client_secret}" type='#[message.attributes.queryParams.receiptType]'/>
+		<ee:transform doc:name="‌init acc" doc:id="e6077445-024b-4df9-9bd0-016ed22a4df5" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="acc" ><![CDATA[%dw 2.0
+output application/java
+---
+[]]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<foreach doc:name="For Each" doc:id="a1cf4d2d-9b77-44b6-a155-547fd07414d6" collection="#[payload]">
+					<logger level="INFO" doc:name="Logger" doc:id="9cea5bf0-4c45-4cbe-8c0b-2fcc7378fdbd" />
+			<flow-ref doc:name="Flow Reference" doc:id="e2f66993-0186-498b-9b82-9a9e36576ea4" name="query-salesforce-flow" target="result"/>
+			<ee:transform doc:name="Transform Message" doc:id="1f579b34-72c3-4d7a-a168-3e1659a21637">
+			<ee:message>
+			</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="result" ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  id: payload.id,
+  sourceId: payload.sourceId,
+  userId: payload.userId,
+  transactionDate: payload.transactionDate,
+  receiptType: payload.receiptType,
+  amount: payload.amount,
+  description: payload.description,
+  m_description: payload.m_description,
+  storeName: payload.storeName,
+  emailAddress: payload.emailAddress,
+  receiptUrl: payload.receiptUrl,
+  fullName: vars.result.fullName,
+  mobile: vars.result.mobile
+}]]></ee:set-variable>
+				</ee:variables>
+		</ee:transform>
+			<ee:transform doc:name="Transform Message" doc:id="ebd6d3ac-3a2d-4fd4-bfd6-0d35521d672a">
+			<ee:message>
+			</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="acc" ><![CDATA[%dw 2.0
+output application/java
+---
+vars.acc + vars.result]]></ee:set-variable>
+				</ee:variables>
+		</ee:transform>
+				</foreach>
+		<set-payload value="#[vars.acc]" doc:name="Set Payload" doc:id="adc778a8-388e-4946-9847-1579b42810fa" />
+		<ee:transform doc:name="Transform Message" doc:id="85466af6-0346-4681-b94d-489374b5e704" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="f0d71ceb-ab41-4f4a-9d28-49d7f42f4dba" >
+				<logger level="INFO" doc:name="Logger" doc:id="a646f3d1-69a0-4fec-bd95-4859909a55c8" />
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+	<sub-flow name="query-salesforce-flow" doc:id="68803f21-81f6-47bd-983c-b987b751a4b4" >
+		<logger level="INFO" doc:name="Logger" doc:id="f9987d43-9a26-4975-896d-1d9d18d58321" message="salesforce query   ++ #[payload]"/>
+		<salesforce:query doc:name="Salesforce Contact Query" doc:id="42da671a-d0ec-4483-a364-174fdb9eb596" config-ref="Salesforce_Config">
+					<salesforce:salesforce-query><![CDATA[SELECT Name, Email, MobilePhone  FROM Contact WHERE Email=':email']]></salesforce:salesforce-query>
+				<salesforce:parameters><![CDATA[#[output application/java
+---
+{
+	email : payload.emailAddress
+}]]]></salesforce:parameters>
+				</salesforce:query>
+		<ee:transform doc:name="Transform Message" doc:id="42b3a8e4-c7ba-414d-84ba-fac00c6ad7e1" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+    fullName: payload[0].Name,
+    mobile: payload[0].MobilePhone    
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</sub-flow>
+	<flow name="cloud-receipt-by-id" doc:id="869a656f-ecca-47ed-8318-26fdf9def79c" >
+		<cloud-receipts-system-api:get-a-receipt-with-specified-id doc:name="Get a receipt with specified id" doc:id="e55305cc-3079-41d3-bb6e-9a4e63cf5a33" config-ref="Cloud_Receipts_System_API_Config" id="#[attributes.uriParams.'ID']" client-id="${secure::receipt.client_id}" client-secret="${secure::receipt.client_secret}"/>
+		<flow-ref doc:name="Flow Reference" doc:id="38824eb4-9341-45ff-8eae-4607d9c7d65c" name="query-salesforce-flow" target="result"/>
+		<ee:transform doc:name="Copy_of_Transform Message" doc:id="65ea4e93-d9a6-490a-91dc-b18c09650b6e" >
+			<ee:message />
+			<ee:variables >
+				<ee:set-variable variableName="result" ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  id: payload.id,
+  sourceId: payload.sourceId,
+  userId: payload.userId,
+  transactionDate: payload.transactionDate,
+  receiptType: payload.receiptType,
+  amount: payload.amount,
+  description: payload.description,
+  m_description: payload.m_description,
+  storeName: payload.storeName,
+  emailAddress: payload.emailAddress,
+  receiptUrl: payload.receiptUrl,
+  fullName: vars.result.fullName,
+  mobile: vars.result.mobile
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<set-payload value="#[vars.result]" doc:name="Set Payload" doc:id="a2d34707-77d7-4cc2-928c-4040b2bcd427" />
+	</flow>
+</mule>

@@ -1,0 +1,20 @@
+%dw 2.0
+
+type auto_869a656f_ecca_47ed_8318_26fdf9def79c_Output_Payload = {
+  sourceId: String, 
+  m_description: String, 
+  amount: Number, 
+  receiptType: "WARRANTY" | "TAXABLE" | "GENERAL", 
+  mobile: String, 
+  description: String, 
+  transactionDate: String, 
+  userId: String, 
+  emailAddress: String, 
+  storeName: String, 
+  id?: String, 
+  fullname: String, 
+  receiptUrl?: String, 
+  _?: Any
+} {"description": "Defines the receipt data type",
+"label": "EnrichedReceipt"}
+

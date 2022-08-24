@@ -1,0 +1,4 @@
+%dw 2.0
+
+type auto_57519a24_86ca_4a15_8798_26096ee1efd1_Output_Variables_acc = Array<Nothing>
+
