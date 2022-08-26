@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
-    <apikit:config name="cloud-receipt-business-api-config" api="resource::350fec90-367b-47ba-8f2b-5f7ec05e4628:cloud-receipt-business-api:1.0.2:raml:zip:cloud-receipt-business-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <apikit:config name="cloud-receipt-business-api-config" api="resource::350fec90-367b-47ba-8f2b-5f7ec05e4628:cloud-receipt-business-api:1.0.4:raml:zip:cloud-receipt-business-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
     <flow name="cloud-receipt-business-api-main">
         <http:listener config-ref="HTTP_Listener_config" path="/api/*">
             <http:response statusCode="#[vars.httpStatus default 200]">
@@ -122,36 +122,36 @@ output application/json
     </flow>
     <flow name="get:\receipts:cloud-receipt-business-api-config">
         <flow-ref doc:name="Flow Reference" doc:id="f7ffaf15-2371-4ad6-8e9b-792fab0b6036" name="Get_Receipts_Impl" />
-		<error-handler >
-			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="512456a3-557e-452c-914a-5eda248a046c" type="ANY">
-				<ee:transform doc:name="Transform Message" doc:id="eb6ad631-502c-424f-919b-2f875193e0a0" >
-					<ee:message >
-						<ee:set-payload ><![CDATA[%dw 2.0
+        <error-handler>
+            <on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="512456a3-557e-452c-914a-5eda248a046c" type="ANY">
+                <ee:transform doc:name="Transform Message" doc:id="eb6ad631-502c-424f-919b-2f875193e0a0">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
 {
 	message : "Receipt creation unsuccessful!!"
 }]]></ee:set-payload>
-					</ee:message>
-				</ee:transform>
-			</on-error-propagate>
-		</error-handler>
+                    </ee:message>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
     </flow>
     <flow name="get:\receipts\(ID):cloud-receipt-business-api-config">
-		<flow-ref doc:name="Flow Reference" doc:id="46f97048-46a1-4e4d-acef-df2942dd5284" name="cloud-receipt-by-id" />
-		<error-handler >
-			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="87dbd320-fda4-497a-b87b-513023cd4137" type="ANY">
-				<ee:transform doc:name="Transform Message" doc:id="c6bb7a02-9b79-4d52-a6db-b2ffb45502a3" >
-					<ee:message >
-						<ee:set-payload ><![CDATA[%dw 2.0
+        <flow-ref doc:name="Flow Reference" doc:id="46f97048-46a1-4e4d-acef-df2942dd5284" name="cloud-receipt-by-id" />
+        <error-handler>
+            <on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="87dbd320-fda4-497a-b87b-513023cd4137" type="ANY">
+                <ee:transform doc:name="Transform Message" doc:id="c6bb7a02-9b79-4d52-a6db-b2ffb45502a3">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
 {
 	message : "Resource not found"
 }]]></ee:set-payload>
-					</ee:message>
-				</ee:transform>
-			</on-error-propagate>
-		</error-handler>
+                    </ee:message>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
     </flow>
 </mule>

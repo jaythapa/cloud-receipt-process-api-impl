@@ -4,49 +4,41 @@
             "sourceId": "CLOUD-RECEIPT-APP",
             "userId": "CLOUD-RECEIPT-APP-1234",
             "transactionDate": "2022-08-15",
-            "type": "TAXABLE",
+            "receiptType": "TAXABLE",
             "amount": 2000.23,
             "description": "Dell Laptop receipt and warranty",
             "m_description": "dell laptop",
             "storeName": "dell online store",
             "emailAddress": "customer1@outlook.com",
-            "receiptUrl": "cloud-receipt.com/receipt/receipt-1",
-            "contact": {
-               "name": "Andy Young",
-               "mobile": "(785) 265-5350"
-             }
+            "receiptUrl": "cloud-receipt.com/receipt/receipt-1"
+            
           },
           {
             "id": "2",
-            "sourceId": "JB_HIFI",
+            "sourceId": "CD451796",
             "userId": "JB_HIFI-1234",
             "transactionDate": "2022-06-15",
-            "type": "GENERAL",
+            "receiptType": "GENERAL",
             "amount": 2000.23,
             "description": "Dell Laptop receipt and warranty purchased from jbhifi",
             "m_description": "jbhifi laptop",
             "storeName": "jbhifi",
             "emailAddress": "customer1@outlook.com",
-            "receiptUrl": "cloud-receipt.com/receipt/receipt-2",            
-            "contact": {
-               "name": "Andy Young",
-               "mobile": "(785) 265-5350"
-             }
+            "receiptUrl": "cloud-receipt.com/receipt/receipt-2"           
+            
           },
           {
             "id": "3",
-            "sourceId": "CLOUD-RECEIPT-APP",
+            "sourceId": "CC978213",
             "userId": "CLOUD-RECEIPT-APP-1234",
             "transactionDate": "2022-07-15",
-            "type": "WARRANTY",
+            "receiptType": "WARRANTY",
             "amount": 2000.23,
             "description": "Dell Laptop receipt and warranty",
             "m_description": "dell laptop",
             "storeName": "dell online store",
             "emailAddress": "customer1@outlook.com",
-            "receiptUrl": "cloud-receipt.com/receipt/receipt-3",
-            "contact": {
-              
-             }
+            "receiptUrl": "cloud-receipt.com/receipt/receipt-3"
+            
           }
         ]

@@ -26,7 +26,7 @@ http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mu
 	
 	<flow name="Get_Receipts_Impl" doc:id="57519a24-86ca-4a15-8798-26096ee1efd1" >
 		<http:listener doc:name="Listener" doc:id="1a7f0e9b-05da-4385-9c4e-8d0a0f0a327a" config-ref="HTTP_Listener_config" path="/receipts"/>
-		<cloud-receipts-system-api:get-all-receipts doc:name="Get all receipts" doc:id="36a5749d-0e7f-4599-b9f2-f9656ae01ab5" config-ref="Cloud_Receipts_System_API_Config" client-id="${secure::receipt.client_id}" client-secret="${secure::receipt.client_secret}" type='#[message.attributes.queryParams.receiptType]'/>
+		<cloud-receipts-system-api:get-all-receipts doc:name="Get all receipts" doc:id="36a5749d-0e7f-4599-b9f2-f9656ae01ab5" config-ref="Cloud_Receipts_System_API_Config" client-id="${secure::receipt.client_id}" client-secret="${secure::receipt.client_secret}" />
 		<ee:transform doc:name="‌init acc" doc:id="e6077445-024b-4df9-9bd0-016ed22a4df5" >
 			<ee:message >
 			</ee:message>
@@ -59,8 +59,8 @@ output application/json
   storeName: payload.storeName,
   emailAddress: payload.emailAddress,
   receiptUrl: payload.receiptUrl,
-  fullName: vars.result.fullName,
-  mobile: vars.result.mobile
+  merchantBusinessName: vars.result.name,
+  merchantContactNumber: vars.result.phone
 }]]></ee:set-variable>
 				</ee:variables>
 		</ee:transform>
@@ -84,20 +84,15 @@ output application/json
 payload]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-		<error-handler >
-			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="f0d71ceb-ab41-4f4a-9d28-49d7f42f4dba" >
-				<logger level="INFO" doc:name="Logger" doc:id="a646f3d1-69a0-4fec-bd95-4859909a55c8" />
-			</on-error-propagate>
-		</error-handler>
 	</flow>
 	<sub-flow name="query-salesforce-flow" doc:id="68803f21-81f6-47bd-983c-b987b751a4b4" >
 		<logger level="INFO" doc:name="Logger" doc:id="f9987d43-9a26-4975-896d-1d9d18d58321" message="salesforce query   ++ #[payload]"/>
 		<salesforce:query doc:name="Salesforce Contact Query" doc:id="42da671a-d0ec-4483-a364-174fdb9eb596" config-ref="Salesforce_Config">
-					<salesforce:salesforce-query><![CDATA[SELECT Name, Email, MobilePhone  FROM Contact WHERE Email=':email']]></salesforce:salesforce-query>
+					<salesforce:salesforce-query><![CDATA[SELECT Name, Phone  FROM Account WHERE AccountNumber =':AccountNumber']]></salesforce:salesforce-query>
 				<salesforce:parameters><![CDATA[#[output application/java
 ---
 {
-	email : payload.emailAddress
+	AccountNumber : payload.sourceId
 }]]]></salesforce:parameters>
 				</salesforce:query>
 		<ee:transform doc:name="Transform Message" doc:id="42b3a8e4-c7ba-414d-84ba-fac00c6ad7e1" >
@@ -106,8 +101,8 @@ payload]]></ee:set-payload>
 output application/json
 ---
 {
-    fullName: payload[0].Name,
-    mobile: payload[0].MobilePhone    
+    name: payload[0].Name,
+    phone: payload[0].Phone    
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
