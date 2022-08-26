@@ -27,6 +27,7 @@ http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mu
 	<flow name="Get_Receipts_Impl" doc:id="57519a24-86ca-4a15-8798-26096ee1efd1" >
 		<http:listener doc:name="Listener" doc:id="1a7f0e9b-05da-4385-9c4e-8d0a0f0a327a" config-ref="HTTP_Listener_config" path="/receipts"/>
 		<cloud-receipts-system-api:get-all-receipts doc:name="Get all receipts" doc:id="36a5749d-0e7f-4599-b9f2-f9656ae01ab5" config-ref="Cloud_Receipts_System_API_Config" client-id="${secure::receipt.client_id}" client-secret="${secure::receipt.client_secret}" />
+		<validation:is-true doc:name="Is true" doc:id="fcbd8045-afd8-4cfd-8092-bf47339c06ef" expression="#[sizeOf(payload) &gt; 0]" message='#[{message: "no data available "}]'/>
 		<ee:transform doc:name="‌init acc" doc:id="e6077445-024b-4df9-9bd0-016ed22a4df5" >
 			<ee:message >
 			</ee:message>
