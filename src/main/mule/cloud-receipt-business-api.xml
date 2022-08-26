@@ -130,7 +130,7 @@ output application/json
 output application/json
 ---
 {
-	message : "Receipt creation unsuccessful!!"
+	message : "Error retrieving has been unsuccessful!!"
 }]]></ee:set-payload>
                     </ee:message>
                 </ee:transform>
@@ -147,7 +147,7 @@ output application/json
 output application/json
 ---
 {
-	message : "Resource not found"
+	message : "Resource not found or invalid id " ++ vars.ID as String
 }]]></ee:set-payload>
                     </ee:message>
                 </ee:transform>

@@ -27,7 +27,7 @@ http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mu
 	<flow name="Get_Receipts_Impl" doc:id="57519a24-86ca-4a15-8798-26096ee1efd1" >
 		<http:listener doc:name="Listener" doc:id="1a7f0e9b-05da-4385-9c4e-8d0a0f0a327a" config-ref="HTTP_Listener_config" path="/receipts"/>
 		<cloud-receipts-system-api:get-all-receipts doc:name="Get all receipts" doc:id="36a5749d-0e7f-4599-b9f2-f9656ae01ab5" config-ref="Cloud_Receipts_System_API_Config" client-id="${secure::receipt.client_id}" client-secret="${secure::receipt.client_secret}" />
-		<validation:is-true doc:name="Is true" doc:id="fcbd8045-afd8-4cfd-8092-bf47339c06ef" expression="#[sizeOf(payload) &gt; 0]" message='#[{message: "no data available "}]'/>
+		<validation:is-true doc:name="Is true" doc:id="fcbd8045-afd8-4cfd-8092-bf47339c06ef" expression="#[sizeOf(payload) &gt; 0]" message='{message: "no data available "}'/>
 		<ee:transform doc:name="‌init acc" doc:id="e6077445-024b-4df9-9bd0-016ed22a4df5" >
 			<ee:message >
 			</ee:message>
@@ -109,9 +109,10 @@ output application/json
 		</ee:transform>
 	</sub-flow>
 	<flow name="cloud-receipt-by-id" doc:id="869a656f-ecca-47ed-8318-26fdf9def79c" >
+		<set-variable doc:name="ID" doc:id="6983fd2c-f514-46b3-9304-fc31cda44f3f" variableName="ID" value="#[attributes.uriParams.'ID' as Number]"/>
 		<cloud-receipts-system-api:get-a-receipt-with-specified-id doc:name="Get a receipt with specified id" doc:id="e55305cc-3079-41d3-bb6e-9a4e63cf5a33" config-ref="Cloud_Receipts_System_API_Config" id="#[attributes.uriParams.'ID']" client-id="${secure::receipt.client_id}" client-secret="${secure::receipt.client_secret}"/>
 		<flow-ref doc:name="Flow Reference" doc:id="38824eb4-9341-45ff-8eae-4607d9c7d65c" name="query-salesforce-flow" target="result"/>
-		<ee:transform doc:name="Copy_of_Transform Message" doc:id="65ea4e93-d9a6-490a-91dc-b18c09650b6e" >
+		<ee:transform doc:name="Transform Message" doc:id="65ea4e93-d9a6-490a-91dc-b18c09650b6e" >
 			<ee:message />
 			<ee:variables >
 				<ee:set-variable variableName="result" ><![CDATA[%dw 2.0
@@ -129,8 +130,8 @@ output application/json
   storeName: payload.storeName,
   emailAddress: payload.emailAddress,
   receiptUrl: payload.receiptUrl,
-  fullName: vars.result.fullName,
-  mobile: vars.result.mobile
+  merchantBusinessName: vars.result.name,
+  merchantContactNumber: vars.result.phone
 }]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
